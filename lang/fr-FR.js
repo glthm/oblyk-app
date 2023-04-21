@@ -1081,6 +1081,7 @@ export default {
       GuideBookSettings: 'Paramètres topos',
       gestionSettings: 'Gestion',
       statistic: 'Statistique',
+      structure: 'Structure',
       various: 'Divers',
       team: "L'équipe",
       openers: 'Les ouvreurs et ouvreuses',
@@ -1140,13 +1141,12 @@ export default {
       uploadPlanFor: 'Télécharger un plan pour : %{name}',
       routes: 'Ouvertures',
       plan: 'Plan',
-      showSector: 'Lignes du secteur <strong>%{name}</strong> mises en évidence.'
+      showSector: 'Lignes du secteur <strong>%{name}</strong>.'
     },
     gymSector: {
       addNew: 'Créer un nouveau secteur',
       chooseSector: 'Choisissez un secteur',
       addNewExplain: "Un secteur est une petite division d'un espace, exemple : Grand devers droite, couloir 4, etc. C'est là que seront renseignées les lignes",
-      explainGroupName: "Vous pouvez grouper vos couloirs / secteurs avec 'Nom du regroupement', exemple vous pouvez avoir 3 secteurs : 'Couloir 1', 'Couloir 2', 'Couloir 3', groupé dans 'Les dalles'",
       resultingParametersOf: 'Issu des paramètres de : %{name}',
       editSectorPolygon: 'Modifier le tracer du secteur',
       createSectorPolygon: 'Tracer le secteur sur le plan',
@@ -1792,7 +1792,7 @@ export default {
       east: 'Est',
       south_east: 'Sud Est',
       south: 'Sud',
-      south_west: 'Sub Ouest',
+      south_west: 'Sud Ouest',
       west: 'Ouest',
       north_west: 'Nord Ouest'
     },
@@ -1986,6 +1986,7 @@ export default {
     },
     gymSector: {
       name: 'Nom du secteur',
+      order: 'Ordre',
       description: 'Description',
       group_sector_name: 'Nom du regroupement',
       climbing_type: "Type d'escalade",

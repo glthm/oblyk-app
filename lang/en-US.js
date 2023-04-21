@@ -1082,6 +1082,7 @@ export default {
       gestionSettings: 'Gestion',
       team: 'Team',
       statistic: 'Statistic',
+      structure: 'Structure',
       various: 'Various',
       openers: 'Openers',
       home: 'Dashboard',
@@ -1140,13 +1141,12 @@ export default {
       uploadPlanFor: 'Upload a plan for : %{name}',
       routes: 'Routes',
       plan: 'Plan',
-      showSector: 'Line in <strong>%{name}</strong> sector highlighted.'
+      showSector: 'Lines in <strong>%{name}</strong> sector.'
     },
     gymSector: {
       addNew: 'Create a new sector',
       chooseSector: 'Choose a sector',
       addNewExplain: 'A sector is a small division of a space, for example: The large slope, slabs, etc.. This is where the lines will be filled in.',
-      explainGroupName: "You can group your corridors / sectors with 'Group name', example you can have 3 sectors: 'Corridor 1', 'Corridor 2', 'Corridor 3', grouped in 'Slabs'.",
       resultingParametersOf: 'Resulting from the parameters of : %{name}',
       editSectorPolygon: 'Edit the sector drawing on the plan',
       createSectorPolygon: 'Draw the area on the map',
@@ -1986,6 +1986,7 @@ export default {
     },
     gymSector: {
       name: 'Secteur name',
+      order: 'Order',
       description: 'Description',
       group_sector_name: 'Name of the grouping',
       climbing_type: 'Climbing type',
