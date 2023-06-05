@@ -36,8 +36,8 @@
         :fill-opacity="0"
         :weight="2"
         dash-array="5px"
-        fill-color="rgb(49, 153, 78)"
-        color="rgb(49, 153, 78)"
+        :fill-color="testColour || gymSpace.sectors_color || 'rgb(49, 153, 78)'"
+        :color="testColour || gymSpace.sectors_color || 'rgb(49, 153, 78)'"
         :lat-lngs="sector.jsonPolygon"
         @click="filterBySector(sector.id, sector.name)"
       />
@@ -55,6 +55,7 @@ import 'leaflet/dist/leaflet.css'
 import { MapDrawingHelpers } from '@/mixins/MapDrawingHelpers'
 import Spinner from '@/components/layouts/Spiner'
 import GymSpace from '@/models/GymSpace'
+import GymSpaceApi from '~/services/oblyk-api/GymSpaceApi'
 
 export default {
   name: 'GymSpacePlan',
@@ -86,6 +87,7 @@ export default {
       savingPolygon: false,
       crs: CRS.Simple,
       gymSpaceData: this.gymSpace,
+      testColour: null,
 
       mdiArrowExpandAll
     }
@@ -109,12 +111,6 @@ export default {
     }
   },
 
-  watch: {
-    bounds () {
-      this.setMapView()
-    }
-  },
-
   mounted () {
     this.$root.$on('startEditSectorPolygon', (gymSectorId) => {
       this.startEditSectorPolygon(gymSectorId)
@@ -128,6 +124,12 @@ export default {
     this.$root.$on('setMapViewOnSector', (gymSectorId) => {
       this.setMapViewOnSector(gymSectorId)
     })
+    this.$root.$on('setMapView', () => {
+      this.setMapView()
+    })
+    this.$root.$on('setTestColour', (color) => {
+      this.testColour = color
+    })
   },
 
   beforeDestroy () {
@@ -135,6 +137,8 @@ export default {
     this.$root.$off('activeSector')
     this.$root.$off('stopEditingSectorPolygon')
     this.$root.$off('setMapViewOnSector')
+    this.$root.$off('setMapView')
+    this.$root.$off('setTestColour')
   },
 
   methods: {
@@ -250,17 +254,20 @@ export default {
 
     reloadGymSpaceData () {
       this.reloadingData = true
-      new GymSpace({ axios: this.$axios, auth: this.$auth })
+      new GymSpaceApi(this.$axios, this.$auth)
         .find(
           this.gymSpaceData.gym.id,
           this.gymSpaceData.id
         )
         .then((resp) => {
-          this.gymSpaceData = resp
+          const gymSpace = new GymSpace({ attributes: resp.data })
+          this.gymSpaceData = gymSpace
+          this.$root.$emit('ReFetchGymSpace', gymSpace)
         })
         .catch((err) => {
           this.$root.$emit('alertFromApiError', err, 'gymSpace')
-        }).finally(() => {
+        })
+        .finally(() => {
           this.reloadingData = false
         })
     },

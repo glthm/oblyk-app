@@ -34,7 +34,7 @@
             icon
             large
             class="float-right"
-            @click="closeGymCard()"
+            @click="closeGymRouteCard()"
           >
             <v-icon large>
               {{ mdiClose }}
@@ -90,8 +90,22 @@
           <description-line
             :icon="mdiTextureBox"
             :item-title="$t('models.gymRoute.gym_sector_id')"
-            :item-value="gymRoute.gym_sector.name"
-          />
+          >
+            <template #content>
+              <v-btn
+                v-if="!showSpace"
+                small
+                text
+                outlined
+                @click="showSector"
+              >
+                {{ gymRoute.gym_sector.name }}
+              </v-btn>
+              <strong v-if="showSpace">
+                {{ gymRoute.gym_sector.name }}
+              </strong>
+            </template>
+          </description-line>
         </v-col>
 
         <!-- Space -->
@@ -118,15 +132,16 @@
         </v-col>
 
         <!-- Route tags -->
-        <v-col v-if="gymRoute.hasTags" cols="12">
+        <v-col v-if="gym && gymRoute.hasStyles" cols="12">
           <description-line
             :icon="mdiPound"
-            :item-title="$t('models.gymRoute.tags')"
+            :item-title="$t('models.gymRoute.styles')"
           >
             <template #content>
-              <gym-route-tags
+              <gym-route-climbing-styles
                 class="mt-2"
                 :gym-route="gymRoute"
+                :gym="gym"
               />
             </template>
           </description-line>
@@ -199,7 +214,6 @@ import { SessionConcern } from '@/concerns/SessionConcern'
 import { DateHelpers } from '@/mixins/DateHelpers'
 import GymRouteTagAndHold from '@/components/gymRoutes/partial/GymRouteTagAndHold'
 import GymRouteGradeAndPoint from '@/components/gymRoutes/partial/GymRouteGradeAndPoint'
-import GymRouteTags from '@/components/gymRoutes/partial/GymRouteTags'
 import GymRouteAscent from '@/components/gymRoutes/GymRouteAscent'
 import Note from '@/components/notes/Note'
 import GymRouteApi from '~/services/oblyk-api/GymRouteApi'
@@ -208,18 +222,19 @@ import DescriptionLine from '~/components/ui/DescriptionLine.vue'
 import GymRouteActionBtn from '~/components/gymRoutes/partial/GymRouteActionBtn.vue'
 import AddGymAscentBtn from '~/components/ascentGymRoutes/AddGymAscentBtn.vue'
 import { GymRolesHelpers } from '~/mixins/GymRolesHelpers'
+import GymRouteClimbingStyles from '~/components/gymRoutes/partial/GymRouteClimbingStyles.vue'
 const MarkdownText = () => import('@/components/ui/MarkdownText')
 
 export default {
   name: 'GymRouteInfo',
   components: {
+    GymRouteClimbingStyles,
     AddGymAscentBtn,
     GymRouteActionBtn,
     DescriptionLine,
     Note,
     MarkdownText,
     GymRouteAscent,
-    GymRouteTags,
     GymRouteGradeAndPoint,
     GymRouteTagAndHold
   },
@@ -232,6 +247,10 @@ export default {
     showSpace: {
       type: Boolean,
       default: false
+    },
+    gym: {
+      type: Object,
+      default: null
     }
   },
 
@@ -258,13 +277,14 @@ export default {
   },
 
   methods: {
-    closeGymCard () {
+    closeGymRouteCard () {
       this.$router.push(
         {
           path: this.$route.path
         }
       )
     },
+
     getAscents () {
       this.loadingAscents = true
       new GymRouteApi(this.$axios, this.$auth)
@@ -279,6 +299,12 @@ export default {
         .finally(() => {
           this.loadingAscents = false
         })
+    },
+
+    showSector () {
+      this.closeGymRouteCard()
+      this.$root.$emit('setMapViewOnSector', this.gymRoute.gym_sector_id)
+      this.$root.$emit('filterBySector', this.gymRoute.gym_sector_id, this.gymRoute.gym_sector.name)
     }
   }
 }
@@ -294,6 +320,7 @@ export default {
 .mobile-interface {
   .gym-route-picture {
     &.--limited-height {
+      height: calc(100vw - 60px);
       max-height: calc(100vw - 60px);
     }
   }
@@ -301,6 +328,7 @@ export default {
 .desktop-interface {
   .gym-route-picture {
     &.--limited-height {
+      height: 350px;
       max-height: 350px;
     }
   }

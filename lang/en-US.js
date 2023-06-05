@@ -15,6 +15,7 @@ export default {
     create: 'Create',
     delete: 'Delete',
     close: 'Close',
+    valid: 'Valid',
     ok: 'ok',
     selectOrUnselect: 'select / unselect',
     search: 'Search',
@@ -49,6 +50,9 @@ export default {
     createAndPicture: 'Create + Picture',
     finish: 'Finish',
     filter: 'Filter',
+    textCopied: 'Text copied',
+    shareOn: 'Share on',
+    share: 'Share',
     backToName: 'Back to %{name}',
     addMember: 'Add a member',
     addOpener: 'Add a opener',
@@ -98,6 +102,7 @@ export default {
     createAndQuite: 'Create & quit',
     continueToAdd: 'Continue to add',
     addArea: 'Add new crags group',
+    createGroup: 'Create group',
     addRepetition: 'Add a repetition',
     addInMyLogbook: 'Add on my logbook',
     addInMyTickList: 'Add on my tick list',
@@ -147,7 +152,7 @@ export default {
     pastelPurple: 'Pastel purple',
     purple: 'Purple',
     deepPurple: 'Deep purple',
-    fluorescentPink: 'Fluorescent pink',
+    pink: 'Pink',
     pastelRed: 'Pastel red',
     red: 'Red',
     darkRed: 'Dark red',
@@ -185,6 +190,9 @@ export default {
     number: 'number',
     documentation: 'Documentation',
     seeDocumentation: 'See the documentation for more information :',
+    whatDoYouWantToDo: 'What do you want to do?',
+    others: 'Others',
+    goTo: 'Go to %{name}',
     at: 'at',
     is: 'is',
     in: 'in',
@@ -218,6 +226,7 @@ export default {
     map: 'Map',
     setting: 'Setting',
     new: '%{count} new | %{count} new',
+    group: 'Group',
     climbers: {
       long: '%{count} climber | %{count} climbers',
       longWithoutCount: 'climber | climbers',
@@ -522,6 +531,7 @@ export default {
     input: {
       climbing_type: 'Climbing type',
       tags: 'Tags',
+      climbingStyle: 'Climbing styles',
       rocks: 'Rock type',
       rain: 'Rain exposure',
       sun: 'Sunshine',
@@ -1103,20 +1113,33 @@ export default {
       various: 'Various',
       openers: 'Openers',
       home: 'Dashboard',
+      parameters: 'Parameters',
       difficultySystem: 'Difficulty system',
+      difficultySystemExplain: 'Difficulty system settings, points system, level rating, etc.',
       difficultySystemShort: 'Systems',
+      climbingStyle: 'Climbing styles',
+      climbingStyleExplain: 'Select the list of climbing styles you use most.',
+      styles: 'Styles',
       spaces: 'Spaces',
+      spaceGroups: 'Space groups',
       routes: 'Routes',
       dismountedRoutes: 'List of dismounted routes',
       mountedRoutes: 'List of mounted routes',
       dismountRoutes: 'Dismount %{count} line | Dismount %{count} lines',
       mountRoutes: 'Mount %{count} line | Mount %{count} lines',
       printRoutes: 'Print line | Print %{count} lines',
+      exportRoutes: 'Export line | Export %{count} lines',
       missingInformation: 'Some information about your room is missing, like :',
       addYourLogo: 'Add your logo',
       updateYourLogo: 'Change your logo',
       addYourBanner: 'Add your banner',
       updateYourBanner: 'Change your banner'
+    },
+    gymClimbingStyles: {
+      title: 'Climbing styles in my gym',
+      explain: 'Choose the climbing styles you want to use most often. When adding routes, these styles will be given priority, saving you time when adding your routes<br><cite>(you can always choose other styles even if they are not ticked)</cite>.',
+      noColor: 'No color',
+      favorites: 'Favorites'
     },
     gymStatistic: {
       figuresTitle: 'In a few figures',
@@ -1158,7 +1181,8 @@ export default {
       uploadPlanFor: 'Upload a plan for : %{name}',
       routes: 'Routes',
       plan: 'Plan',
-      showSector: 'Lines in <strong>%{name}</strong> sector.'
+      showSector: 'Lines in <strong>%{name}</strong> sector.',
+      colorExplain: 'Choose a colour for the sectors on the map.'
     },
     gymSector: {
       addNew: 'Create a new sector',
@@ -1189,6 +1213,12 @@ export default {
       inMyLogBook: 'In my log book',
       ascents: '1 ascent | %{count} ascents',
       printedFileName: 'Route sheet - %{date} - %{name}.pdf',
+      exportedFileName: 'Routes export - %{date} - %{name}.csv',
+      routeAdded: 'Route added',
+      takeMainPicture: 'Take main picture',
+      addNewRoute: 'Add new route',
+      mainPicture: 'Main picture',
+      thumbnailPicture: 'Representative detail',
       sorts: {
         opened_at: 'Sort by opening date',
         sector: 'Sort by sector',
@@ -1999,7 +2029,13 @@ export default {
       description: 'Description',
       order: 'Order of importance',
       climbing_type: 'Majority climbing type',
-      gym_grade_id: 'Difficulty system'
+      sectors_color: 'Sectors color',
+      gym_grade_id: 'Difficulty system',
+      gym_space_group_id: 'Group'
+    },
+    gymSpaceGroup: {
+      name: 'Group name',
+      order: 'Order'
     },
     gymSector: {
       name: 'Secteur name',
@@ -2017,6 +2053,7 @@ export default {
       height: 'Height',
       height_by_section: 'Height L.%{index}',
       tags_by_section: 'Tags L.%{index}',
+      styles_by_section: 'Styles L.%{index}',
       height_total: 'Height total',
       climbing_type: 'Climbing type',
       favorite: 'Favorite',
@@ -2043,6 +2080,7 @@ export default {
       points: 'Points',
       grade: 'Grade',
       tags: 'Tags',
+      styles: 'Styles',
       grade_by_section: 'Grade L.%{index}'
     },
     gymGrade: {
@@ -2095,6 +2133,18 @@ export default {
       fun_climbing: 'FC',
       training_space: 'T',
       pan: 'P'
+    },
+    climbingStyle: {
+      boulder: 'Bolder',
+      endurance: 'Endurance',
+      resistance: 'Resistance',
+      technical: 'Technical',
+      physics: 'Physics',
+      finger: 'Finger',
+      grip: 'Grip',
+      coordination: 'Coordination',
+      tall_people: 'For larger',
+      small_people: 'For smaller'
     },
     word: {
       name: 'Word',

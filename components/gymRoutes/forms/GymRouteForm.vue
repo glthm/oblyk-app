@@ -16,6 +16,7 @@
         :label="$t('models.gymRoute.gym_grade_line_id')"
         outlined
         required
+        :menu-props="{ maxHeight: 500 }"
         @change="onChangeDifficulty()"
       />
 
@@ -34,6 +35,7 @@
             <template #activator="{ on }">
               <v-btn
                 class="mt-n2"
+                tabindex="-1"
                 icon
                 :loading="findingRandomName"
                 @click="findRandomRoute"
@@ -69,18 +71,20 @@
       />
 
       <!-- Open at -->
-      <date-picker-input
+      <date-picker-menu-input
         v-model="data.opened_at"
         :label="$t('models.gymRoute.opened_at')"
       />
 
       <!-- Tags -->
       <div v-if="!multiPitch">
-        <tags-input
+        <indoor-climbing-styles-input
           v-for="(value, index) in data.sections"
-          :key="index"
-          v-model="value.tags"
-          :label="multiPitch ? $t('models.gymRoute.tags_by_section', { index: index + 1 }) : $t('models.gymRoute.tags')"
+          :key="`style-index-${index}`"
+          v-model="value.styles"
+          :gym="gymSector.gym"
+          :climbing-type="data.climbing_type"
+          :label="multiPitch ? $t('models.gymRoute.styles_by_section', { index: index + 1 }) : $t('models.gymRoute.styles')"
         />
       </div>
 
@@ -126,6 +130,7 @@
           v-model="data.points"
           outlined
           type="number"
+          suffix="points"
           :required="(gymGrade.point_system_type === 'fix')"
           :label="$t('models.gymRoute.points')"
         />
@@ -160,10 +165,11 @@
 
           <!-- Tags by section if more than one pitch -->
           <div v-if="multiPitch" class="col">
-            <tags-input
-              v-model="section.tags"
-              hide-details
-              :label="$t('models.gymRoute.tags_by_section', { index: sectionIndex + 1 })"
+            <indoor-climbing-styles-input
+              v-model="section.styles"
+              :gym="gymSector.gym"
+              :climbing-type="data.climbing_type"
+              :label="$t('models.gymRoute.styles_by_section', { index: sectionIndex + 1 })"
             />
           </div>
         </div>
@@ -206,7 +212,7 @@
           <color-input
             v-show="gymGrade.tag_color || (data.tag_colors && data.tag_colors.length > 0)"
             v-model="data.tag_colors"
-            label="Couleurs des étiquettes"
+            :label="$t('models.gymRoute.tag_colors')"
             icon="Bookmark"
             :multiple="true"
             :colors-limit="2"
@@ -217,7 +223,7 @@
           <color-input
             v-show="gymGrade.hold_color || (data.hold_colors && data.hold_colors.length > 0)"
             v-model="data.hold_colors"
-            label="Couleurs des prises"
+            :label="$t('models.gymRoute.hold_colors')"
             icon="Circle"
             :multiple="true"
             :colors-limit="2"
@@ -258,20 +264,131 @@
         />
       </div>
 
-      <close-form />
-      <submit-form
-        :overlay="submitOverlay"
-        :submit-local-key="submitText()"
-      >
+      <div>
         <v-btn
-          v-if="!isEditingForm()"
-          color="primary"
-          class="float-right mr-2"
-          @click="submitAndThenPicture()"
+          icon
+          @click="$router.go(-1)"
         >
-          {{ $t('actions.createAndPicture') }}
+          <v-icon>{{ mdiArrowLeft }}</v-icon>
         </v-btn>
-      </submit-form>
+        <v-btn
+          :loading="addingRoute"
+          elevation="0"
+          color="primary"
+          class="float-right"
+          @click="submit"
+        >
+          {{ $t(submitText()) }}
+        </v-btn>
+      </div>
+
+      <client-only>
+        <!-- After add dialog-->
+        <v-dialog
+          v-model="afterAddDialog"
+          persistent
+          width="350"
+        >
+          <v-card class="pa-4">
+            <v-alert
+              text
+              type="success"
+            >
+              {{ $t('components.gymRoute.routeAdded') }} !
+            </v-alert>
+            <div v-if="newGymRoute">
+              <p class="text-decoration-underline">
+                {{ $t('common.whatDoYouWantToDo') }}
+              </p>
+
+              <!-- Go to picture -->
+              <v-btn
+                v-if="!hidePictureBtn"
+                outlined
+                large
+                text
+                block
+                color="primary"
+                class="mb-3"
+                @click="openPictureDialog()"
+              >
+                <v-icon
+                  class="mr-3"
+                  left
+                >
+                  {{ mdiCameraPlus }}
+                </v-icon>
+                {{ $t('components.gymRoute.takeMainPicture') }}
+              </v-btn>
+
+              <!-- New adding -->
+              <v-btn
+                outlined
+                large
+                text
+                block
+                color="primary"
+                class="mb-3"
+                @click="resetForNewAdd()"
+              >
+                <v-icon
+                  left
+                  class="mr-3"
+                >
+                  {{ mdiSourceBranchPlus }}
+                </v-icon>
+                {{ $t('components.gymRoute.addNewRoute') }}
+              </v-btn>
+
+              <!-- Continuer d'ajouter -->
+              <v-btn
+                outlined
+                large
+                text
+                block
+                :to="newGymRoute.pathInSpace"
+              >
+                <v-icon
+                  left
+                  class="mr-3"
+                >
+                  {{ mdiArrowRightBoldBoxOutline }}
+                </v-icon>
+                {{ $t('common.goTo', { name: newGymRoute.gym_space.name }) }}
+              </v-btn>
+            </div>
+          </v-card>
+        </v-dialog>
+
+        <!-- Picture dialog -->
+        <v-dialog
+          v-model="pictureDialog"
+          persistent
+          width="500"
+        >
+          <v-card
+            v-if="newGymRoute"
+          >
+            <v-card-title>
+              {{ pictureStep === 'main' ? $t('components.gymRoute.mainPicture') : $t('components.gymRoute.thumbnailPicture') }}
+            </v-card-title>
+            <div class="pa-4">
+              <gym-route-picture-form
+                v-if="pictureStep === 'main'"
+                :go-back-btn="false"
+                :callback="pictureMainStepCallback"
+                :gym-route="newGymRoute"
+              />
+              <gym-route-thumbnail-form
+                v-if="pictureStep === 'thumbnail'"
+                :go-back-btn="false"
+                :gym-route="newGymRoute"
+                :callback="pictureThumbnailStepCallback"
+              />
+            </div>
+          </v-card>
+        </v-dialog>
+      </client-only>
     </v-form>
   </div>
 </template>
@@ -284,37 +401,41 @@ import {
   mdiPlus,
   mdiMinus,
   mdiBookmarkMultipleOutline,
-  mdiChartBubble
+  mdiChartBubble,
+  mdiCameraPlus,
+  mdiArrowLeft,
+  mdiArrowRightBoldBoxOutline,
+  mdiSourceBranchPlus
 } from '@mdi/js'
 import { FormHelpers } from '@/mixins/FormHelpers'
 import { HoldColorsHelpers } from '@/mixins/HoldColorsHelpers'
-import CloseForm from '@/components/forms/CloseForm'
-import SubmitForm from '@/components/forms/SubmitForm'
+import { DateHelpers } from '@/mixins/DateHelpers'
 import Spinner from '@/components/layouts/Spiner'
 import GymGradeApi from '~/services/oblyk-api/GymGradeApi'
 import GymRouteApi from '~/services/oblyk-api/GymRouteApi'
 import GymGrade from '@/models/GymGrade'
 import ColorInput from '@/components/forms/ColorInput'
 import GymRoute from '@/models/GymRoute'
-import DatePickerInput from '@/components/forms/DatePickerInput'
-import { DateHelpers } from '@/mixins/DateHelpers'
-import TagsInput from '@/components/forms/TagsInput'
 import CragRouteApi from '~/services/oblyk-api/CragRouteApi'
 import CragRoute from '@/models/CragRoute'
 import MarkdownInput from '@/components/forms/MarkdownInput'
 import GymOpenerInput from '~/components/forms/GymOpenerInput'
+import DatePickerMenuInput from '~/components/forms/DatePickerMenuInput.vue'
+import IndoorClimbingStylesInput from '~/components/forms/IndoorClimbingStyleInput.vue'
+const GymRouteThumbnailForm = () => import('~/components/gymRoutes/forms/GymRouteThumbnailForm.vue')
+const GymRoutePictureForm = () => import('~/components/gymRoutes/forms/GymRoutePictureForm.vue')
 
 export default {
   name: 'GymRouteForm',
   components: {
+    IndoorClimbingStylesInput,
+    GymRouteThumbnailForm,
+    GymRoutePictureForm,
+    DatePickerMenuInput,
     GymOpenerInput,
     MarkdownInput,
-    TagsInput,
-    DatePickerInput,
     ColorInput,
-    Spinner,
-    SubmitForm,
-    CloseForm
+    Spinner
   },
   mixins: [FormHelpers, HoldColorsHelpers, DateHelpers],
   props: {
@@ -340,6 +461,12 @@ export default {
       loadingGymGrade: true,
       loadingSimilarSector: true,
       similarSectors: [],
+      afterAddDialog: false,
+      addingRoute: false,
+      pictureDialog: false,
+      newGymRoute: null,
+      pictureStep: 'main',
+      hidePictureBtn: false,
       data: {
         id: this.gymRoute?.id,
         name: this.gymRoute?.name,
@@ -356,7 +483,7 @@ export default {
         gym_space_id: this.gymSector.gym_space.id,
         gym_sector_id: null,
         gym_id: this.gymSector.gym.id,
-        sections: this.gymRoute?.sections || [{ grade: null, height: null, tags: [] }]
+        sections: this.gymRoute?.sections || [{ grade: null, height: null, styles: [] }]
       },
       climbingGymList: [
         { text: this.$t('models.climbs.sport_climbing'), value: 'sport_climbing' },
@@ -372,7 +499,11 @@ export default {
       mdiPlus,
       mdiMinus,
       mdiBookmarkMultipleOutline,
-      mdiChartBubble
+      mdiChartBubble,
+      mdiCameraPlus,
+      mdiArrowLeft,
+      mdiArrowRightBoldBoxOutline,
+      mdiSourceBranchPlus
     }
   },
 
@@ -390,31 +521,58 @@ export default {
   },
 
   methods: {
-    submitAndThenPicture () {
-      this.nextAction = 'picture'
-      this.submit()
-    },
-
     submit () {
-      this.submitOverlay = true
+      this.addingRoute = true
       const promise = (this.isEditingForm()) ? new GymRouteApi(this.$axios, this.$auth).update(this.data) : new GymRouteApi(this.$axios, this.$auth).create(this.data)
 
       promise
         .then((resp) => {
-          const gymRoute = new GymRoute({ attributes: resp.data })
+          this.newGymRoute = new GymRoute({ attributes: resp.data })
           if (this.redirectTo) {
             this.$router.push(this.redirectTo)
-          } else if (this.nextAction === 'picture') {
-            this.$router.push(`${gymRoute.path}/picture`)
+          } else if (!this.isEditingForm()) {
+            this.afterAddDialog = true
           } else {
-            this.$router.push(`${gymRoute.gymSpacePath}?route=${gymRoute.id}`)
+            this.$router.push(`${this.newGymRoute.gymSpacePath}?route=${this.newGymRoute.id}`)
           }
         })
         .catch((err) => {
           this.$root.$emit('alertFromApiError', err, 'gymRoute')
         }).then(() => {
-          this.submitOverlay = false
+          this.addingRoute = false
         })
+    },
+
+    resetForNewAdd () {
+      this.newGymRoute = null
+      this.afterAddDialog = false
+      this.pictureDialog = false
+      this.hidePictureBtn = false
+      this.pictureStep = 'main'
+      this.data.id = null
+      this.data.name = null
+      this.data.description = null
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+    },
+
+    openPictureDialog () {
+      this.afterAddDialog = false
+      this.pictureDialog = true
+    },
+
+    pictureMainStepCallback (gymRoute) {
+      this.newGymRoute = gymRoute
+      this.pictureStep = 'thumbnail'
+    },
+
+    pictureThumbnailStepCallback (gymRoute) {
+      this.afterAddDialog = true
+      this.pictureDialog = false
+      this.newGymRoute = gymRoute
+      this.hidePictureBtn = true
     },
 
     findRandomRoute () {

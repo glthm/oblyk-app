@@ -15,6 +15,7 @@ export default {
     create: 'Créer',
     delete: 'Supprimer',
     close: 'Fermer',
+    valid: 'Valider',
     ok: 'ok',
     selectOrUnselect: 'sélectionner / désélectionner',
     search: 'Chercher',
@@ -49,6 +50,9 @@ export default {
     createAndPicture: 'Créer + Photo',
     finish: 'Terminer',
     filter: 'Filtrer',
+    textCopied: 'Texte copié',
+    shareOn: 'Partager sur',
+    share: 'Partager',
     backToName: 'Retour à %{name}',
     addMember: 'Ajouter un membre',
     addOpener: 'Ajouter un·e ouvreur·euse',
@@ -98,6 +102,7 @@ export default {
     createAndQuite: 'Créer & quitter',
     continueToAdd: "Continuer d'ajouter",
     addArea: 'Ajouter un nouveau groupe',
+    createGroup: 'Créer un groupe',
     addRepetition: 'Ajouter une répétition',
     addInMyLogbook: 'Ajouter à mon carnet',
     addInMyTickList: 'Ajouter à ma tick list',
@@ -147,7 +152,7 @@ export default {
     pastelPurple: 'Violet pastel',
     purple: 'Violet',
     deepPurple: 'Violet profond',
-    fluorescentPink: 'Rose fluo',
+    pink: 'Rose',
     pastelRed: 'Rouge pastel',
     red: 'Rouge',
     darkRed: 'Rouge profond',
@@ -185,6 +190,9 @@ export default {
     number: 'nombre',
     documentation: 'Documentation',
     seeDocumentation: "Consultez la documentation pour en connaître d'avantage :",
+    whatDoYouWantToDo: 'Que voulez vous faire ?',
+    others: 'Autres',
+    goTo: 'Aller à %{name}',
     at: 'le',
     is: 'à',
     in: 'en',
@@ -218,6 +226,7 @@ export default {
     map: 'Carte',
     setting: 'Réglage',
     new: '%{count} nouveau | %{count} nouveaux',
+    group: 'Groupe',
     climbers: {
       long: '%{count} grimpeur ou grimpeuse | %{count} grimpeurs et grimpeuses',
       longWithoutCount: 'grimpeur ou grimpeuse | grimpeurs et grimpeuses',
@@ -522,6 +531,7 @@ export default {
     input: {
       climbing_type: "Type d'escalade",
       tags: 'Tags',
+      climbingStyle: "Styles d'escalade",
       rocks: 'Type de roche',
       rain: 'Exposition à la pluie',
       sun: 'Ensoleillement',
@@ -1103,20 +1113,33 @@ export default {
       team: "L'équipe",
       openers: 'Les ouvreurs et ouvreuses',
       home: 'Dashboard',
+      parameters: 'Paramètres',
       difficultySystem: 'Système de difficulté',
+      difficultySystemExplain: 'Paramètre des systèmes de difficulté, système de points, cotation par niveau, etc.',
       difficultySystemShort: 'Les systèmes',
+      climbingStyle: "Styles d'escalade",
+      climbingStyleExplain: "Sélectionner la liste de style d'escalades que vous utilisez majoritairement.",
+      styles: 'Les styles',
       spaces: 'Espaces',
+      spaceGroups: "Groupes d'espace",
       routes: 'Lignes',
       dismountedRoutes: 'Liste des lignes démontées',
       mountedRoutes: 'Liste des lignes montées',
       dismountRoutes: 'Démonter la ligne | Démonter les %{count} lignes',
       mountRoutes: 'Monter la ligne | Monter les %{count} lignes',
       printRoutes: 'Imprimer la ligne | Imprimer les %{count} lignes',
+      exportRoutes: 'Exporter la ligne | Exporter les %{count} lignes',
       missingInformation: 'Il manque quelques information sur votre salle, comme :',
       addYourLogo: 'Ajouter votre logo',
       updateYourLogo: 'Changer votre logo',
       addYourBanner: 'Ajouter votre bandeau',
       updateYourBanner: 'Changer votre bandeau'
+    },
+    gymClimbingStyles: {
+      title: "Les styles d'escalade de ma salle",
+      explain: "Choisissez les styles d'escalades que vous souhaitez utiliser couramment. Lors de l'ajout des voies/blocs/pans ces styles vous seront proposer en priorité, vous gagnerez ainsi du temps à l'ajout de vos lignes.<br><cite>(Vous pourrez toujours choisir les autres styles même s'ils ne sont pas cochés)</cite>",
+      noColor: 'Pas de couleur',
+      favorites: 'Favoris'
     },
     gymStatistic: {
       figuresTitle: 'En quelques chiffres',
@@ -1158,7 +1181,8 @@ export default {
       uploadPlanFor: 'Télécharger un plan pour : %{name}',
       routes: 'Ouvertures',
       plan: 'Plan',
-      showSector: 'Lignes du secteur <strong>%{name}</strong>.'
+      showSector: 'Lignes du secteur <strong>%{name}</strong>.',
+      colorExplain: 'Choisissez une couleur pour le tracé des secteurs sur le plan.'
     },
     gymSector: {
       addNew: 'Créer un nouveau secteur',
@@ -1189,6 +1213,12 @@ export default {
       inMyLogBook: 'Dans mon carnet',
       ascents: '1 ascension | %{count} ascensions',
       printedFileName: 'Fiche de voie - %{date} - %{name}.pdf',
+      exportedFileName: 'Export des voies - %{date} - %{name}.csv',
+      routeAdded: 'Ligne ajoutée',
+      takeMainPicture: 'Prendre la photo principal',
+      addNewRoute: 'Ajouter une autre ligne',
+      mainPicture: 'Photo de ligne',
+      thumbnailPicture: 'Détail représentatif',
       sorts: {
         opened_at: "Trier par date d'ouverture",
         sector: 'Trier par secteur',
@@ -1998,8 +2028,14 @@ export default {
       name: "Nom de l'espace",
       description: 'Description',
       order: "Ordre d'importance",
+      sectors_color: 'Couleur des secteurs',
       climbing_type: "Type d'escalade majoritaire",
-      gym_grade_id: 'Système de difficulté'
+      gym_grade_id: 'Système de difficulté',
+      gym_space_group_id: 'Groupe'
+    },
+    gymSpaceGroup: {
+      name: 'Nom du groupe',
+      order: 'Ordre'
     },
     gymSector: {
       name: 'Nom du secteur',
@@ -2017,6 +2053,7 @@ export default {
       height: 'Hauteur',
       height_by_section: 'Hauteur L.%{index}',
       tags_by_section: 'Tags L.%{index}',
+      styles_by_section: 'Styles L.%{index}',
       height_total: 'Hauteur total',
       climbing_type: 'Type de grimpe',
       favorite: 'Favori',
@@ -2025,7 +2062,7 @@ export default {
       opened_at: "Date d'ouverture",
       polyline: 'Tracé',
       colors: 'Colors',
-      hold_colors: 'Couleurs des prises',
+      hold_colors: 'Couleur des prises',
       tag_colors: 'Couleur des étiquettes',
       sections: 'Sections',
       gym_sector_id: 'Secteur',
@@ -2043,6 +2080,7 @@ export default {
       points: 'Points',
       grade: 'Cotation',
       tags: 'Tags',
+      styles: 'Styles',
       grade_by_section: 'Cotation L.%{index}'
     },
     gymGrade: {
@@ -2095,6 +2133,18 @@ export default {
       fun_climbing: 'FC',
       training_space: 'E',
       pan: 'P'
+    },
+    climbingStyle: {
+      boulder: 'Bloc',
+      endurance: 'Conti',
+      resistance: 'Rési',
+      technical: 'Technique',
+      physics: 'Physique',
+      finger: 'À doigt',
+      grip: 'À friction',
+      coordination: 'Coordination',
+      tall_people: 'Morpho',
+      small_people: 'Adapté aux petites tailles'
     },
     word: {
       name: 'Mot',
