@@ -34,6 +34,8 @@ export default {
     addRoute: 'Ajouter une ligne',
     newRoute: 'Nouvelle ligne',
     addLine: 'Ajouter une ligne',
+    editMapElements: 'Modifier les éléments de la carte',
+    addRockBar: 'Ajouter une barre rocheuse',
     signIn: 'Me connecter',
     signUp: 'Créer un compte',
     addLevel: 'Ajouter un niveau',
@@ -45,6 +47,7 @@ export default {
     editPicture: 'Modifier la photo',
     defineThumbnail: 'Définir la miniature',
     upload: 'Uploader',
+    reverse: 'Retourner',
     dismountRoute: 'Démonter la ligne',
     dismountAllRoutes: 'Démonter toutes les lignes',
     createAndPicture: 'Créer + Photo',
@@ -57,6 +60,7 @@ export default {
     addMember: 'Ajouter un membre',
     addOpener: 'Ajouter un·e ouvreur·euse',
     see: 'Voir',
+    seeMap: 'Voir la carte',
     seeOnTheMap: 'Voir sur la carte',
     seeEmail: "Voir l'email",
     myAvatar: 'Mon avatar',
@@ -134,7 +138,8 @@ export default {
     addAAscents: 'Ajouter une croix',
     deleteNote: 'Supprimer la note',
     addNote: 'Ajouter une note',
-    editNote: 'Modifier la note'
+    editNote: 'Modifier la note',
+    next: 'Suivant'
   },
   colors: {
     noColor: 'Toutes',
@@ -711,6 +716,13 @@ export default {
         deepWater: 'Deep water',
         viaFerrata: 'Via Ferrata',
         funClimbing: 'Fun Climbing'
+      },
+      magicCard: {
+        title: 'Que faire ici',
+        fetchData: 'Récupération des informations local',
+        sun: 'Soleil',
+        sunshineAt: 'Ensoleillement au',
+        clicForTool: "Cliquez sur la carte pour plus d'outils"
       }
     },
     localization: {
@@ -815,6 +827,14 @@ export default {
       information: 'Informations détaillées',
       locationAndAccess: 'Localisation & Accès',
       gradesAndLevels: 'Cotations & Niveaux',
+      explainMapEditor: "Cliquer sur un élément de la carte pour le modifier.<br>Où cliquer sur \"Ajouter\" pour ajouter un parking, une marche d'approche, etc.",
+      explainGlobalLocation: "Fait glisser le marker pour modifier l'emplacement général de la falaise.",
+      explainPark: "Cliquer sur la carte à l'emplacement du parking. Ou déplacez le marqueur rose.",
+      explainApproach: "Cliquer sur la carte aux différents points où passe la marche d'approche",
+      explainRockBar: 'Cliquer sur la carte aux différents points pour tracer la barre rocheuse.',
+      explainRockBarSector: 'Vous pouvez affecter la barre rocheuse à un secteur en particulier, ou laisser vide pour représenter la falaise en général.',
+      cragFoot: 'Pied de falaise',
+      globalLocation: 'Emplacement général',
       tabs: {
         info: 'Info',
         routes: 'Voies',
@@ -940,6 +960,7 @@ export default {
       }
     },
     approach: {
+      names: 'Approches',
       cardTitle: "Marche d'approches",
       newPolylineExplain: 'Cliquer à chaque endroit où passe la marche d’approche en partant du parkings',
       editPolylineExplain: "Déplacer les carrés blanc pour modifier le tracé de la marche d'approche",
@@ -1886,6 +1907,11 @@ export default {
       grade: 'Cotation',
       description: 'Description'
     },
+    rockBar: {
+      sunshine: 'Ensoleillement',
+      title: 'Barre rocheuse',
+      crag_sector_id: 'Secteur'
+    },
     ascentCragRoute: {
       type: 'Type',
       ascent_status: "Status de l'ascension",
@@ -1942,11 +1968,14 @@ export default {
       institutional: 'Institution public / Projet open source'
     },
     park: {
-      description: 'Description',
+      names: 'Parkings',
+      title: 'Parking',
+      description: 'Infos complémentaires sur ce parking',
       crag: 'Falaise'
     },
     approach: {
-      description: 'Description',
+      title: "Marche d'approche",
+      description: "Info sur la marche d'approche",
       no_description: 'pas de description renseignée',
       elevation_drop: 'Dénivelé',
       approach_type: 'Type de marche',

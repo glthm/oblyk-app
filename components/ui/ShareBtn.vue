@@ -5,18 +5,27 @@
   >
     <template #activator="{ on, attrs }">
       <v-btn
-        icon
+        :small="small"
+        :icon="icon"
+        :text="!icon"
+        :outlined="!icon"
         :title="$t('actions.share')"
         v-bind="attrs"
         v-on="on"
       >
-        <v-icon>
-          {{ mdiShare }}
+        <v-icon
+          :left="!icon"
+          :small="small"
+        >
+          {{ mdiShareVariant }}
         </v-icon>
+        <span v-if="!icon">
+          {{ $t('actions.share') }}
+        </span>
       </v-btn>
     </template>
     <v-card class="oblyk-share-dialog">
-      <v-card-title>
+      <v-card-title class="text-truncate">
         {{ $t('actions.share') }} : {{ title }}
       </v-card-title>
       <v-card-text class="pb-0">
@@ -30,12 +39,12 @@
           @click="share"
         >
           <v-icon left>
-            {{ mdiShare }}
+            {{ mdiShareVariant }}
           </v-icon>
           {{ $t('actions.shareOn') }} ...
         </v-btn>
         <v-text-field
-          v-model="copyContent"
+          v-model="copyUrl"
           outlined
           :hint="copied ? `${$t('actions.textCopied')} !` : null"
           persistent-hint
@@ -58,7 +67,7 @@
 </template>
 
 <script>
-import { mdiShare, mdiContentCopy, mdiCheck } from '@mdi/js'
+import { mdiShareVariant, mdiContentCopy, mdiCheck } from '@mdi/js'
 
 export default {
   name: 'ShareBtn',
@@ -67,23 +76,27 @@ export default {
       type: String,
       required: true
     },
-    content: {
+    url: {
       type: String,
       required: true
     },
     small: {
       type: Boolean,
       default: false
+    },
+    icon: {
+      type: Boolean,
+      default: true
     }
   },
 
   data () {
     return {
-      copyContent: this.content,
+      copyUrl: `${process.env.VUE_APP_OBLYK_APP_URL}${this.url}`,
       copied: false,
       shareDialog: false,
 
-      mdiShare,
+      mdiShareVariant,
       mdiContentCopy,
       mdiCheck
     }
@@ -95,7 +108,7 @@ export default {
         return navigator.canShare(
           {
             title: this.title,
-            url: this.content
+            url: this.copyUrl
           }
         )
       } catch (err) {
@@ -108,7 +121,7 @@ export default {
     copy () {
       navigator
         .clipboard
-        .writeText(this.copyContent)
+        .writeText(this.copyUrl)
         .then(() => {
           this.copied = true
           setTimeout(() => { this.copied = false }, 3000)
@@ -119,7 +132,7 @@ export default {
       try {
         await navigator.share({
           title: this.title,
-          url: this.content
+          url: this.copyUrl
         })
       } catch (err) {
         console.error(err)

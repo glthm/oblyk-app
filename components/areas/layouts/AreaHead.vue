@@ -17,22 +17,48 @@
       <div class="area-header-title">
         <h1 class="font-weight-medium">
           {{ area.name }}
-          <client-only>
-            <v-btn
-              v-if="isLoggedIn"
-              :to="`${area.path}/edit`"
-              icon
-              :title="$t('actions.edit')"
-              class="ml-1"
-            >
-              <v-icon>
-                {{ mdiPencil }}
-              </v-icon>
-            </v-btn>
-          </client-only>
         </h1>
         <div>
           {{ $t('components.area.groupTitle', { count: area.crags_count }) }}
+        </div>
+        <div
+          v-if="$auth.loggedIn"
+          class="mt-2"
+        >
+          <client-only>
+            <share-btn
+              :title="area.name"
+              :url="area.path"
+              :icon="false"
+            />
+            <v-menu offset-y>
+              <template #activator="{ on, attrs }">
+                <v-btn
+                  icon
+                  text
+                  outlined
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>
+                    {{ mdiDotsVertical }}
+                  </v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item :to="`${area.path}/edit`">
+                  <v-list-item-icon>
+                    <v-icon>
+                      {{ mdiPencil }}
+                    </v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    {{ $t('actions.edit') }}
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </client-only>
         </div>
       </div>
     </v-img>
@@ -40,12 +66,12 @@
 </template>
 
 <script>
-import { mdiPencil } from '@mdi/js'
-import { SessionConcern } from '@/concerns/SessionConcern'
+import { mdiPencil, mdiDotsVertical } from '@mdi/js'
+import ShareBtn from '~/components/ui/ShareBtn.vue'
 
 export default {
   name: 'AreaHead',
-  mixins: [SessionConcern],
+  components: { ShareBtn },
   props: {
     area: {
       type: Object,
@@ -55,9 +81,11 @@ export default {
 
   data () {
     return {
-      mdiPencil,
       croppedSrc: this.area.croppedCoverUrl,
-      largeSrc: this.area.coverUrl
+      largeSrc: this.area.coverUrl,
+
+      mdiPencil,
+      mdiDotsVertical
     }
   },
 
