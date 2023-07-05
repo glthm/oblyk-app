@@ -68,6 +68,7 @@ export default {
     uploadAvatar: 'Uploader une photo',
     mySettings: 'Mes paramètres',
     editMyProfile: 'Modifier mon profil',
+    seeSunshine: "Voir l'ensoleillement",
     no: 'Non',
     yes: 'Oui',
     change: 'Changer',
@@ -1239,7 +1240,10 @@ export default {
       takeMainPicture: 'Prendre la photo principal',
       addNewRoute: 'Ajouter une autre ligne',
       mainPicture: 'Photo de ligne',
+      mainPictureExplain: "Une photo du bloc dans sa globalité ou de la première partie d'une voie",
       thumbnailPicture: 'Détail représentatif',
+      thumbnailPictureExplain: 'Cadrer un detail comme la prise de départ',
+      reusePicture: 'Réutiliser une photo',
       sorts: {
         opened_at: "Trier par date d'ouverture",
         sector: 'Trier par secteur',

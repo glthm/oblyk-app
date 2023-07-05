@@ -68,6 +68,7 @@ export default {
     uploadAvatar: 'Upload profil picture',
     mySettings: 'My settings',
     editMyProfile: 'Edit my profile',
+    seeSunshine: 'See sunshine',
     no: 'No',
     yes: 'Yes',
     change: 'Change',
@@ -1239,7 +1240,10 @@ export default {
       takeMainPicture: 'Take main picture',
       addNewRoute: 'Add new route',
       mainPicture: 'Main picture',
+      mainPictureExplain: 'A photo of the whole boulder or the first part of a route',
       thumbnailPicture: 'Representative detail',
+      thumbnailPictureExplain: 'Framing a detail like the starting shot',
+      reusePicture: 'Reusing a photo',
       sorts: {
         opened_at: 'Sort by opening date',
         sector: 'Sort by sector',
