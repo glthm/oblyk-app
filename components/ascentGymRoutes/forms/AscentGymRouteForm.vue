@@ -1,55 +1,68 @@
 <template>
-  <div>
-    <v-form @submit.prevent="submit()">
-      <!-- Ascent status -->
-      <ascent-status-input v-model="data.ascent_status" />
+  <v-form @submit.prevent="submit()">
+    <!-- Ascent status -->
+    <ascent-status-input v-model="data.ascent_status" />
 
-      <!-- Released at -->
-      <date-picker-input
-        v-model="data.released_at"
-        :icon="mdiCalendar"
-        :label="$t('models.ascentGymRoute.released_at')"
+    <!-- Released at -->
+    <date-picker-input
+      v-model="data.released_at"
+      :icon="mdiCalendar"
+      :label="$t('models.ascentGymRoute.released_at')"
+    />
+
+    <!-- Real favorite -->
+    <div class="border --current-color-border rounded mb-7 px-3 py-1">
+      <like-btn
+        ref="btnLike"
+        class="vertical-align-sub"
+        :likeable-id="gymRoute.id"
+        likeable-type="GymRoute"
+        :small="false"
+        @click.stop=""
       />
-
-      <note-input
-        v-model="data.note"
-      />
-
-      <v-textarea
-        v-model="data.comment"
-        outlined
-        :label="$t('models.ascentGymRoute.comment')"
-      />
-
-      <!-- Sections choice -->
-      <div
-        v-if="gymRoute && gymRoute.sections.length > 1"
-        class="mb-7"
+      <strong
+        class="hoverable"
+        @click="$refs.btnLike.likeOrUnlike()"
       >
-        <p class="subtitle-2">
-          {{ $t('components.ascentGymRoute.pitchMade') }} :
-        </p>
-        <div
-          v-for="(section, index) in gymRoute.sections"
-          :key="`section-${index}`"
-        >
-          <v-checkbox
-            v-model="data.selected_sections"
-            :label="`L.${index + 1} - ${section.grade}`"
-            :value="index"
-            hide-details
-          />
-        </div>
-      </div>
+        {{ $t('components.like.isRealFavorite') }}
+        {{ iLikeIt ? '!' : '?' }}
+      </strong>
+    </div>
 
-      <close-form />
-      <submit-form
-        :overlay="submitOverlay"
-        :go-back-btn="false"
-        :submit-local-key="submitText()"
-      />
-    </v-form>
-  </div>
+    <v-textarea
+      v-model="data.comment"
+      outlined
+      :label="$t('models.ascentGymRoute.comment')"
+    />
+
+    <!-- Sections choice -->
+    <div
+      v-if="gymRoute && gymRoute.sections.length > 1"
+      class="mb-7"
+    >
+      <p class="subtitle-2">
+        {{ $t('components.ascentGymRoute.pitchMade') }} :
+      </p>
+      <div
+        v-for="(section, index) in gymRoute.sections"
+        :key="`section-${index}`"
+      >
+        <v-checkbox
+          v-model="data.selected_sections"
+          :label="`L.${index + 1} - ${section.grade}`"
+          :value="index"
+          hide-details
+        />
+      </div>
+    </div>
+
+    <close-form />
+    <submit-form
+      :overlay="submitOverlay"
+      :go-back-btn="false"
+      :submit-local-key="isEditingForm() ? 'actions.edit' : 'actions.add'"
+    />
+  </v-form>
 </template>
 
 <script>
@@ -61,11 +74,11 @@ import AscentGymRouteApi from '~/services/oblyk-api/AscentGymRouteApi'
 import CloseForm from '@/components/forms/CloseForm'
 import AscentStatusInput from '@/components/forms/AscentStatusInput'
 import DatePickerInput from '@/components/forms/DatePickerInput'
-import NoteInput from '@/components/forms/NoteInput'
+import LikeBtn from '~/components/forms/LikeBtn.vue'
 
 export default {
   name: 'AscentGymRouteForm',
-  components: { NoteInput, DatePickerInput, AscentStatusInput, CloseForm, SubmitForm },
+  components: { LikeBtn, DatePickerInput, AscentStatusInput, CloseForm, SubmitForm },
   mixins: [
     FormHelpers,
     DateHelpers
@@ -101,6 +114,12 @@ export default {
         note: this.ascentGymRoute?.note,
         comment: this.ascentGymRoute?.comment
       }
+    }
+  },
+
+  computed: {
+    iLikeIt () {
+      return this.$store.getters['likes/storedLikes'].GymRoute?.includes(this.gymRoute.id)
     }
   },
 
