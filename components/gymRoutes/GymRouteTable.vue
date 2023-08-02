@@ -1,68 +1,74 @@
 <template>
   <div>
-    <!-- Switch & Actions menu -->
-    <v-sheet
-      class="rounded pa-4 mt-4 mb-4"
-    >
-      <v-switch
-        v-model="mountedRoute"
-        class="mt-0 d-inline-block"
-        hide-details
-        :label="mountedRoute ? $t('components.gymAdmin.mountedRoutes') : $t('components.gymAdmin.dismountedRoutes')"
-      />
-    </v-sheet>
-
     <!-- Routes table -->
     <v-row class="mb-10">
       <v-col>
         <client-only>
           <v-data-table
             v-model="routeSelected"
-            :headers="tables.headers"
-            :items="tables.routes"
-            :items-per-page="mountedRoute ? -1 : 15"
+            :headers="tableHeaders"
+            :items="tableRoutes"
+            :items-per-page="-1"
             :loading="loadingRoutes"
             item-key="id"
-            :show-select="gymAuthCan(gym, 'manage_opening')"
+            :show-select="canManageOpening"
           >
             <!-- Header slot -->
-            <template #[`header.ascentsCount`]="{ header }">
+            <template
+              v-once
+              #[`header.ascentsCount`]="{ header }"
+            >
               <v-icon
                 small
                 :title="header.text"
               >
-                {{ mdiBookCheckOutline }}
+                {{ mdiBookCheckOutline() }}
               </v-icon>
             </template>
-            <template #[`header.likesCount`]="{ header }">
+            <template
+              v-once
+              #[`header.likesCount`]="{ header }"
+            >
               <v-icon
                 small
                 :title="header.text"
               >
-                {{ mdiHeartOutline }}
+                {{ mdiHeartOutline() }}
               </v-icon>
             </template>
-            <template #[`header.difficultyAppreciation`]="{ header }">
+            <template
+              v-once
+              #[`header.difficultyAppreciation`]="{ header }"
+            >
               <v-icon
                 small
                 :title="header.text"
               >
-                {{ mdiGauge }}
+                {{ mdiGauge() }}
               </v-icon>
             </template>
 
             <!-- Row slot -->
-            <template #[`item.color`]="{ item }">
+            <template
+              v-once
+              #[`item.color`]="{ item }"
+            >
               <gym-route-tag-and-hold :gym-route="item.color" />
             </template>
-            <template #[`item.space`]="{ item }">
+            <template
+              v-once
+              #[`item.space`]="{ item }"
+            >
               <nuxt-link :to="item.space.gymSpacePath">
                 {{ item.space.gym_space.name }}
               </nuxt-link>
             </template>
-            <template #[`item.openedAt`]="{ item }">
+            <template
+              v-once
+              #[`item.openedAt`]="{ item }"
+            >
               <v-btn
-                v-if="gymAuthCan(gym, 'manage_opening')"
+                v-if="canManageOpening"
                 small
                 icon
                 left
@@ -70,14 +76,35 @@
                 @click="routesBulkSelector(item.id, 'openedAt')"
               >
                 <v-icon small>
-                  {{ mdiCheckAll }}
+                  {{ mdiCheckAll() }}
                 </v-icon>
               </v-btn>
               {{ humanizeDate(item.openedAt, 'D MMM YY') }}
             </template>
-            <template #[`item.sector`]="{ item }">
+            <template
+              v-once
+              #[`item.anchorNumber`]="{ item }"
+            >
               <v-btn
-                v-if="gymAuthCan(gym, 'manage_opening')"
+                v-if="canManageOpening && item.anchorNumber !== null"
+                small
+                icon
+                left
+                :title="`${$t('actions.selectOrUnselect')} : ${item.anchorNumber}`"
+                @click="routesBulkSelector(item.id, 'anchorNumber')"
+              >
+                <v-icon small>
+                  {{ mdiCheckAll() }}
+                </v-icon>
+              </v-btn>
+              {{ item.anchorNumber }}
+            </template>
+            <template
+              v-once
+              #[`item.sector`]="{ item }"
+            >
+              <v-btn
+                v-if="canManageOpening"
                 small
                 icon
                 left
@@ -85,12 +112,15 @@
                 @click="routesBulkSelector(item.id, 'sector')"
               >
                 <v-icon small>
-                  {{ mdiCheckAll }}
+                  {{ mdiCheckAll() }}
                 </v-icon>
               </v-btn>
               {{ item.sector }}
             </template>
-            <template #[`item.ascentsCount`]="{ item }">
+            <template
+              v-once
+              #[`item.ascentsCount`]="{ item }"
+            >
               <v-btn
                 v-if="item.ascentsCount > 0"
                 small
@@ -100,23 +130,26 @@
                 {{ item.ascentsCount }}
               </v-btn>
             </template>
-            <template #[`item.difficultyAppreciation`]="{ item }">
+            <template
+              v-once
+              #[`item.difficultyAppreciation`]="{ item }"
+            >
               <v-icon
                 v-if="item.difficultyAppreciation !== null"
                 :style="`transform: rotate(${item.difficultyAppreciation * -90}deg)`"
                 :title="difficultyAppreciationStatus(item.difficultyAppreciation)"
                 :color="difficultyColor(item.difficultyAppreciation)"
               >
-                {{ mdiArrowRightThin }}
+                {{ mdiArrowRightThin() }}
               </v-icon>
             </template>
-            <template #[`item.edit`]="{ item }">
-              <nuxt-link
-                v-if="gymAuthCan(gym, 'manage_opening')"
-                :to="`${item.edit.path}/edit?redirect_to=${$route.fullPath}`"
-              >
+            <template
+              v-once
+              #[`item.edit`]="{ item }"
+            >
+              <nuxt-link :to="`${item.edit.path}/edit?redirect_to=${$route.fullPath}`">
                 <v-icon small>
-                  {{ mdiPencil }}
+                  {{ mdiPencil() }}
                 </v-icon>
               </nuxt-link>
             </template>
@@ -141,29 +174,23 @@
               v-on="on"
             >
               <v-icon left>
-                {{ mdiDotsVertical }}
+                {{ mdiDotsVertical() }}
               </v-icon>
               {{ $t('actions.actions') }}
             </v-btn>
           </template>
           <v-list>
-            <v-list-item
-              v-if="mountedRoute"
-              @click="dismountCollection()"
-            >
+            <v-list-item @click="dismountCollection()">
               <v-list-item-icon>
-                <v-icon>{{ mdiBackburger }}</v-icon>
+                <v-icon>{{ mdiBackburger() }}</v-icon>
               </v-list-item-icon>
               <v-list-item-title>
                 {{ $tc('components.gymAdmin.dismountRoutes', routeSelected.length, { count: routeSelected.length }) }}
               </v-list-item-title>
             </v-list-item>
-            <v-list-item
-              v-if="!mountedRoute"
-              @click="mountCollection()"
-            >
+            <v-list-item @click="mountCollection()">
               <v-list-item-icon>
-                <v-icon>{{ mdiForwardburger }}</v-icon>
+                <v-icon>{{ mdiForwardburger() }}</v-icon>
               </v-list-item-icon>
               <v-list-item-title>
                 {{ $tc('components.gymAdmin.mountRoutes', routeSelected.length, { count: routeSelected.length }) }}
@@ -171,7 +198,7 @@
             </v-list-item>
             <v-list-item @click="printCollection()">
               <v-list-item-icon>
-                <v-icon>{{ mdiPrinter }}</v-icon>
+                <v-icon>{{ mdiPrinter() }}</v-icon>
               </v-list-item-icon>
               <v-list-item-title>
                 {{ $tc('components.gymAdmin.printRoutes', routeSelected.length, { count: routeSelected.length }) }}
@@ -179,7 +206,7 @@
             </v-list-item>
             <v-list-item @click="exportCollection()">
               <v-list-item-icon>
-                <v-icon>{{ mdiTableArrowRight }}</v-icon>
+                <v-icon>{{ mdiTableArrowRight() }}</v-icon>
               </v-list-item-icon>
               <v-list-item-title>
                 {{ $tc('components.gymAdmin.exportRoutes', routeSelected.length, { count: routeSelected.length }) }}
@@ -279,7 +306,11 @@ import AscentGymRouteStatusIcon from '~/components/ascentGymRoutes/AscentGymRout
 
 export default {
   name: 'GymRoutesTable',
-  components: { AscentGymRouteStatusIcon, Note, GymRouteTagAndHold },
+  components: {
+    AscentGymRouteStatusIcon,
+    Note,
+    GymRouteTagAndHold
+  },
   mixins: [DateHelpers, GymRolesHelpers],
   props: {
     gym: {
@@ -291,108 +322,145 @@ export default {
   data () {
     return {
       routes: [],
-      mountedRoute: true,
       loadingRoutes: true,
       routeSelected: [],
       ascentsDialog: false,
       loadingAscents: true,
       routeAscents: [],
-      tables: {
-        headers: [
-          {
-            text: this.$t('models.gymRoute.colors'),
-            align: 'start',
-            sortable: false,
-            value: 'color'
-          },
-          {
-            text: this.$t('models.gymRoute.grade'),
+      tableRoutes: []
+    }
+  },
+
+  computed: {
+    tableHeaders () {
+      const headers = [
+        {
+          order: 1,
+          text: this.$t('models.gymRoute.colors'),
+          align: 'start',
+          sortable: false,
+          value: 'color'
+        },
+        {
+          order: 5,
+          text: this.$t('models.gymRoute.openers'),
+          align: 'start',
+          sortable: true,
+          value: 'opener'
+        },
+        {
+          order: 6,
+          text: this.$t('models.gymRoute.opened_at'),
+          align: 'start',
+          sortable: true,
+          value: 'openedAt'
+        },
+        {
+          order: 8,
+          text: this.$t('models.gymRoute.gym_sector_id'),
+          align: 'start',
+          sortable: true,
+          value: 'sector'
+        },
+        {
+          order: 9,
+          text: this.$t('models.gymRoute.gym_space_id'),
+          align: 'start',
+          sortable: true,
+          value: 'space'
+        },
+        {
+          order: 10,
+          text: this.$t('models.gymRoute.ascents'),
+          align: 'start',
+          sortable: true,
+          value: 'ascentsCount'
+        },
+        {
+          order: 11,
+          text: this.$t('models.gymRoute.likes_count'),
+          align: 'start',
+          sortable: true,
+          value: 'likesCount'
+        },
+        {
+          order: 12,
+          text: this.$t('models.gymRoute.difficulty_appreciation'),
+          align: 'start',
+          sortable: true,
+          value: 'difficultyAppreciation'
+        }
+      ]
+
+      let haveAnchor = false
+      let haveName = false
+      let havePoint = false
+      let haveGrade = false
+      for (const route of this.routes) {
+        // Add anchor column
+        if (!haveAnchor && route.anchor_number !== null) {
+          headers.push({
+            order: 7,
+            text: this.$t('models.gymRoute.anchor_number'),
             align: 'start',
             sortable: true,
-            value: 'grade'
-          },
-          {
-            text: this.$t('models.gymRoute.points'),
-            align: 'start',
-            sortable: true,
-            value: 'points'
-          },
-          {
+            value: 'anchorNumber'
+          })
+          haveAnchor = true
+        }
+        // Add name column
+        if (!haveName && route.name !== null) {
+          headers.push({
+            order: 4,
             text: this.$t('models.gymRoute.short_name'),
             align: 'start',
             sortable: true,
             value: 'name'
-          },
-          {
-            text: this.$t('models.gymRoute.openers'),
+          })
+          haveName = true
+        }
+        // Add point column
+        if (!havePoint && route.points_to_s !== null) {
+          headers.push({
+            order: 3,
+            text: this.$t('models.gymRoute.points'),
             align: 'start',
             sortable: true,
-            value: 'opener'
-          },
-          {
-            text: this.$t('models.gymRoute.opened_at'),
+            value: 'points'
+          })
+          havePoint = true
+        }
+        // Add grade column
+        if (!haveGrade && route.grade_to_s !== null) {
+          headers.push({
+            order: 2,
+            text: this.$t('models.gymRoute.grade'),
             align: 'start',
             sortable: true,
-            value: 'openedAt'
-          },
+            value: 'grade'
+          })
+          haveGrade = true
+        }
+      }
+
+      // Is user can be manage route
+      if (this.canManageOpening) {
+        headers.push(
           {
-            text: this.$t('models.gymRoute.gym_sector_id'),
-            align: 'start',
-            sortable: true,
-            value: 'sector'
-          },
-          {
-            text: this.$t('models.gymRoute.gym_space_id'),
-            align: 'start',
-            sortable: true,
-            value: 'space'
-          },
-          {
-            text: this.$t('models.gymRoute.ascents'),
-            align: 'start',
-            sortable: true,
-            value: 'ascentsCount'
-          },
-          {
-            text: this.$t('models.gymRoute.likes_count'),
-            align: 'start',
-            sortable: true,
-            value: 'likesCount'
-          },
-          {
-            text: this.$t('models.gymRoute.difficulty_appreciation'),
-            align: 'start',
-            sortable: true,
-            value: 'difficultyAppreciation'
-          },
-          {
+            order: 13,
             text: '',
             align: 'center',
             sortable: false,
             value: 'edit'
           }
-        ],
-        routes: []
-      },
+        )
+      }
 
-      mdiBackburger,
-      mdiForwardburger,
-      mdiPencil,
-      mdiPrinter,
-      mdiDotsVertical,
-      mdiCheckAll,
-      mdiTableArrowRight,
-      mdiBookCheckOutline,
-      mdiHeartOutline,
-      mdiGauge,
-      mdiArrowRightThin
-    }
-  },
+      return headers.sort((a, b) => a.order - b.order)
+    },
 
-  watch: {
-    mountedRoute () {
-      this.routeSelected = []
-      this.getRoutes()
+    canManageOpening () {
+      return this.gymAuthCan(this.gym, 'manage_opening')
     }
   },
 
@@ -404,12 +472,9 @@ export default {
     getRoutes () {
       this.loadingRoutes = true
       this.routes = []
-      this.tables.routes = []
+      this.tableRoutes = []
       new GymApi(this.$axios, this.$auth)
-        .routes(
-          this.gym.id,
-          !this.mountedRoute
-        )
+        .routes(this.gym.id)
         .then((resp) => {
           for (const route of resp.data) {
             this.routes.push(new GymRoute({ attributes: route }))
@@ -422,7 +487,7 @@ export default {
     },
 
     routesBulkSelector (routeId, attribute) {
-      const selectedRoute = this.tables.routes.find(route => route.id === routeId)
+      const selectedRoute = this.tableRoutes.find(route => route.id === routeId)
       const inSelectedRoute = this.routeSelected.find(route => route.id === routeId)
 
       if (inSelectedRoute) {
@@ -434,7 +499,7 @@ export default {
         }
         this.routeSelected = newSelectedRoute
       } else {
-        for (const route of this.tables.routes) {
+        for (const route of this.tableRoutes) {
           if (route[attribute] === selectedRoute[attribute]) {
             this.routeSelected.push(route)
           }
@@ -444,13 +509,14 @@ export default {
 
     formatRoutes () {
       for (const route of this.routes) {
-        this.tables.routes.push(
+        this.tableRoutes.push(
           {
             id: route.id,
             color: route,
             name: route.name,
             grade: route.grade_to_s,
             points: route.points_to_s,
+            anchorNumber: route.anchor_number,
             sector: route.gym_sector.name,
             space: route,
             opener: route.openers.map(opener => opener.name).join(', '),
@@ -602,7 +668,19 @@ export default {
       } else {
         return this.$t('components.difficulty.soft')
       }
-    }
+    },
+
+    mdiBackburger () { return mdiBackburger },
+    mdiForwardburger () { return mdiForwardburger },
+    mdiPencil () { return mdiPencil },
+    mdiPrinter () { return mdiPrinter },
+    mdiDotsVertical () { return mdiDotsVertical },
+    mdiCheckAll () { return mdiCheckAll },
+    mdiTableArrowRight () { return mdiTableArrowRight },
+    mdiBookCheckOutline () { return mdiBookCheckOutline },
+    mdiHeartOutline () { return mdiHeartOutline },
+    mdiGauge () { return mdiGauge },
+    mdiArrowRightThin () { return mdiArrowRightThin }
   }
 }
 </script>
