@@ -9,8 +9,8 @@
     <!-- Comment list -->
     <div v-else>
       <div
-        v-for="comment in comments"
-        :key="comment.id"
+        v-for="(comment, commentIndex) in comments"
+        :key="`comment-index-${commentIndex}`"
         class="mt-3"
       >
         <comment-card
